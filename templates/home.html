@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Your Title Here</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #333;
+            overflow: hidden;
+            position: relative;
+        }
+
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        nav h4 {
+            margin: 0;
+            color: white;
+            padding: 14px 16px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: none;
+            position: absolute;
+            top: 70px;
+            left: 0;
+            background-color: #333;
+            width: 200px;
+            text-align: center;
+            color: white;
+            z-index: 1;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        h4, h2, h3 {
+            color: #333;
+        }
+
+        .phone-number {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        .log-btn {
+            float: right;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        .log-btn:hover {
+            background-color: #555;
+        }
+
+        .usr-btn {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        .usr-btn:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'login' %}" class="log-btn"><h4>Login</h4></a>
+            <a href="{% url 'signup' %}" class="log-btn"><h4>Signup</h4></a>
+        {% else %}
+            <a href="{% url 'user_details_page' %}" class="usr-btn"><h4>{{ user.email }}</h4></a>
+            <a href="{% url 'logout' %}" class="log-btn"><h4>Logout</h4></a>
+        {% endif %}
+    </nav>
+
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

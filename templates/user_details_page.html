@@ -1,0 +1,14 @@
+{% extends 'home.html' %}
+ 
+{% block content %}
+ <div class="container">
+        <h1>User Details</h1>
+        <h2>{{ user.email }}</h2>
+
+        {% for user_info in more_info %}
+            <p class="phone-number">{{ user_info.phone_no }}</p>
+            <!-- Add more details as needed -->
+        {% endfor %}
+ </div>
+{% endblock %}
+
