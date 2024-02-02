@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event</title>
+    <!-- Add your additional stylesheets or scripts here -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h1>Create Event</h1>
+
+        <label for="event_poster">Event Poster</label>
+        <input type="file" name="event_poster" required>
+
+        <label for="event_type">Event Type</label>
+        <input type="text" name="event_type" required>
+
+        <label for="event_name">Event Name</label>
+        <input type="text" name="event_name" required>
+
+        <label for="starting_date">Starting Date</label>
+        <input type="datetime-local" name="starting_date" required>
+
+        <label for="ending_date">Ending Date</label>
+        <input type="datetime-local" name="ending_date" required>
+
+        <label for="summary">Summary</label>
+        <textarea name="summary" rows="4" required></textarea>
+
+        <label for="description">Description</label>
+        <textarea name="description" rows="8" required></textarea>
+
+        <label for="category">Category</label>
+        <input type="text" name="category" required>
+
+        <label for="social_media_links">Social Media Links</label>
+        <input type="text" name="social_media_links" placeholder="Enter links as JSON" required>
+
+        <label for="location">Location</label>
+        <input type="text" name="location" required>
+
+        <button type="submit">Create Event</button>
+    </form>
+</body>
+</html>

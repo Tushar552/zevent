@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from users.models import Account,Account_more_info
+from users.models import Account,Account_more_info, Event, EventDetails
 
 from django.contrib.auth.admin import UserAdmin
  
@@ -43,3 +43,17 @@ class Account_admin(UserAdmin,admin.ModelAdmin):
     fieldsets = ()
     
 #admin.site.register(Account,Account_admin)
+    
+
+
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('id', 'event_name', 'starting_date', 'ending_date', 'author')
+    list_filter = ('event_type', 'created_on', 'published')
+    search_fields = ('event_name', 'event_type', 'author__email')
+
+@admin.register(EventDetails)
+class EventDetailsAdmin(admin.ModelAdmin):
+    list_display = ('event', 'summary', 'description', 'category', 'location')
+    search_fields = ('event__event_name', 'category', 'location')

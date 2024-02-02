@@ -2,6 +2,9 @@ from django.db import models
 # Required Imports for makeing the custom user model
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
+from django.conf import settings
+from cloudinary_storage.storage import RawMediaCloudinaryStorage
+from cloudinary.models import CloudinaryField
 
 #+++++++++++++++++ ACCOUNT MANAGER ++++++++++++++++++++
 class Account_Manager(BaseUserManager):
@@ -57,6 +60,45 @@ class Account(AbstractBaseUser,PermissionsMixin): # Inorder to use this custom m
 class Account_more_info(models.Model): # User's can add more info about once the account is created from their profile
     phone_no = models.CharField(max_length = 10,blank = True,null =True)
     author = models.ForeignKey(Account,default = None,on_delete = models.CASCADE) # Inheriting the Model 'Account' as the author 
+
+
+ #++++++++++++++++ Event Section +++++++++++++++++++++++++
+
+class Event(models.Model):
+    event_poster = CloudinaryField("Event Posters", resource_type="image", blank=True, null=True)
+    event_type = models.CharField(max_length=255)
+    event_name = models.CharField(max_length=255)
+    starting_date = models.DateTimeField()
+    ending_date = models.DateTimeField()
+    published = models.BooleanField(default=False)
+    created_on = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.event_name
+
+class EventDetails(models.Model):
+    event = models.OneToOneField(Event, on_delete=models.CASCADE, related_name='event_details')
+    summary = models.TextField()
+    description = models.TextField()
+    category = models.CharField(max_length=255)
+    social_media_links = models.JSONField(blank=True, null=True)
+    location = models.CharField(max_length=255)
+    event_poster = CloudinaryField("Event Posters", resource_type="image", blank=True, null=True)
+
+    def __str__(self):
+        return f"Details for {self.event.event_name}"
+    
+
+class EventPicture(models.Model):
+    image = CloudinaryField("Images", resource_type="image")
+    author = models.ForeignKey(Event, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.author.event_name} - Picture"
+
+    class Meta:
+        verbose_name_plural = "Event Pictures"
 
 
     

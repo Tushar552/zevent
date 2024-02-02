@@ -84,16 +84,50 @@
         .usr-btn:hover {
             background-color: #555;
         }
+
+        .event-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .event-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 10px;
+            max-width: 300px; /* Adjust this value as needed */
+        }
+
+        .view-event-btn {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 10px;
+            background-color: #3498db;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .view-event-btn:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
     <nav>
         {% if not user.is_authenticated %}
-            <a href="{% url 'login' %}" class="log-btn"><h4>Login</h4></a>
-            <a href="{% url 'signup' %}" class="log-btn"><h4>Signup</h4></a>
+            <a href="{% url 'login' %}" class="log-btn">Login</a>
+            <a href="{% url 'signup' %}" class="log-btn">Signup</a>
         {% else %}
-            <a href="{% url 'user_details_page' %}" class="usr-btn"><h4>{{ user.email }}</h4></a>
-            <a href="{% url 'logout' %}" class="log-btn"><h4>Logout</h4></a>
+            <a href="{% url 'user_details_page' %}" class="usr-btn">{{ user.email }}</a>
+            <a href="{% url 'create_event' %}" class="log-btn">Create Event</a>
+            <a href="{% url 'logout' %}" class="log-btn">Logout</a>
         {% endif %}
     </nav>
 
@@ -101,5 +135,14 @@
         {% block content %}{% endblock %}
     </div>
 
+    <div class="event-container">
+        {% for event in events %}
+            <div class="event-card">
+                <p>Event ID: {{ event.id }}</p>
+                <p>Event Name: {{ event.event_name }}</p>
+                <a href="{% url 'view_event' event.id %}" class="view-event-btn">View Event Details</a>
+            </div>
+        {% endfor %}
+    </div>
 </body>
 </html>
