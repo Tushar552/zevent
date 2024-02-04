@@ -1,0 +1,7 @@
+<!-- event_sns_list.html -->
+<h2>EventSNS List</h2>
+<ul>
+    {% for event_sns in object_list %}
+        <li><a href="{% url 'event_sns_detail' pk=event_sns.pk %}">{{ event_sns }}</a></li>
+    {% endfor %}
+</ul>
