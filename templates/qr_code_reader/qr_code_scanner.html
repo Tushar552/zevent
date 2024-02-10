@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        #scanner-container {
+            position: relative;
+            width: 300px; /* Adjust scanner width as needed */
+            height: 300px; /* Adjust scanner height as needed */
+            overflow: hidden;
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+        }
+
+        #scanning-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 0 20px #00ff00;
+            animation: scanning-animation 1s infinite alternate;
+        }
+
+        @keyframes scanning-animation {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 20% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .confirm-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .confirm-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="scanner-container">
+        <video id="video" autoplay></video>
+        <div id="scanning-effect"></div>
+    </div>
+
+    <!-- Modal dialog -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Confirm QR Code</h2>
+            <p id="qr-data"></p>
+            <button id="confirm-button" class="confirm-button">Confirm</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.0/dist/jsQR.js"></script>
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                video.srcObject = stream;
+                video.play();
+                setInterval(scanQRCode, 1000);
+            })
+            .catch(function(err) {
+                console.error('Error accessing the camera:', err);
+            });
+
+            function scanQRCode() {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                if (code) {
+                    console.log('QR code detected in scanQRCode:', code.data); // Add this line to log the QR code data
+                    openModal(code.data);
+                }
+            }
+            
+
+        function openModal(data) {
+            const modal = document.getElementById('modal');
+            const qrData = document.getElementById('qr-data');
+            qrData.textContent = data;
+            console.log('QR code data in openModal:', data); // Add this line to log the QR code data
+            modal.style.display = 'block';
+        }
+        
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        document.getElementById('confirm-button').addEventListener('click', function() {
+            const qrData = document.getElementById('qr-data').textContent;
+            const confirmation = confirm('Do you want to proceed with QR code data: ' + qrData + '?');
+            if (confirmation) {
+                // Send the QR code data to the server for processing
+                fetch('', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ data: qrData }) // Ensure 'data' matches the key used in the view
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    // Redirect to the success page after processing
+                    window.location.href = '/success_page/';
+                })
+                .catch(error => {
+                    console.error('Error processing QR code:', error);
+                });
+            } else {
+                // Close the modal if the user cancels
+                document.getElementById('modal').style.display = 'none';
+            }
+        });
+        
+        
+        
+        
+
+        
+
+        
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

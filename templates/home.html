@@ -126,6 +126,8 @@
             <a href="{% url 'signup' %}" class="log-btn">Signup</a>
         {% else %}
             <a href="{% url 'user_details_page' %}" class="usr-btn">{{ user.email }}</a>
+            <a href="/scan/" class="log-btn">Scan QR</a>
+            <a href="/read_qr_code/" class="log-btn">Generate QR</a>
             <a href="{% url 'create_event' %}" class="log-btn">Create Event</a>
             <a href="{% url 'logout' %}" class="log-btn">Logout</a>
         {% endif %}
