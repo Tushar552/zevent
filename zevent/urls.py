@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 
 from users.views import signin,signup,home,signout, user_details_page
 from event.views import create_event, view_event, EventSNSListView, EventSNSDetailView
+from qr_code_reader.views import read_qr_code, view_qr_code
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,6 +37,8 @@ urlpatterns = [
     path('view_event/<int:event_id>/', view_event, name='view_event'),
     path('event_sns/', EventSNSListView.as_view(), name='event_sns_list'),
     path('event_sns/<int:pk>/', EventSNSDetailView.as_view(), name='event_sns_detail'),
+    path('read_qr_code/', read_qr_code, name='read_qr_code'),
+    path('view_qr_code/', view_qr_code, name='view_qr_code')
 ]
 
 if settings.DEBUG:

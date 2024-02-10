@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     
     'users',
     'event',
+    'qr_code_reader',
     'cloudinary_storage',
     'cloudinary',
 ]
