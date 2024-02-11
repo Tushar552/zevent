@@ -105,37 +105,47 @@
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
 
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(stream) {
+        async function requestCameraPermission() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                return stream;
+            } catch (error) {
+                console.error('Error accessing the camera:', error);
+                throw error; // Rethrow the error to handle it further if needed
+            }
+        }
+
+        async function initCamera() {
+            try {
+                const stream = await requestCameraPermission();
                 video.srcObject = stream;
                 video.play();
                 setInterval(scanQRCode, 1000);
-            })
-            .catch(function(err) {
-                console.error('Error accessing the camera:', err);
-            });
-
-            function scanQRCode() {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                const code = jsQR(imageData.data, imageData.width, imageData.height);
-                if (code) {
-                    console.log('QR code detected in scanQRCode:', code.data); // Add this line to log the QR code data
-                    openModal(code.data);
-                }
+            } catch (error) {
+                console.error('Failed to initialize camera:', error);
+                // Handle error appropriately, such as displaying a message to the user
             }
-            
+        }
+
+        function scanQRCode() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+            if (code) {
+                console.log('QR code detected in scanQRCode:', code.data);
+                openModal(code.data);
+            }
+        }
 
         function openModal(data) {
             const modal = document.getElementById('modal');
             const qrData = document.getElementById('qr-data');
             qrData.textContent = data;
-            console.log('QR code data in openModal:', data); // Add this line to log the QR code data
+            console.log('QR code data in openModal:', data);
             modal.style.display = 'block';
         }
-        
 
         window.onclick = function(event) {
             const modal = document.getElementById('modal');
@@ -172,14 +182,7 @@
                 document.getElementById('modal').style.display = 'none';
             }
         });
-        
-        
-        
-        
 
-        
-
-        
         // Function to get CSRF token from cookies
         function getCookie(name) {
             var cookieValue = null;
@@ -195,6 +198,9 @@
             }
             return cookieValue;
         }
+
+        // Call the function to initialize camera when the page loads
+        window.onload = initCamera;
     </script>
 </body>
 </html>
