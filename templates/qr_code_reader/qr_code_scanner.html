@@ -85,7 +85,7 @@
     </style>
 </head>
 <body>
-    <button id="request-permission-button">Allow Camera Access</button>
+    <button id="request-camera-btn">Request Camera Access</button>
 
     <div id="scanner-container">
         <video id="video" autoplay playsinline></video>
@@ -103,10 +103,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.0/dist/jsQR.js"></script>
     <script>
-        const requestPermissionButton = document.getElementById('request-permission-button');
+        const videoContainer = document.getElementById('video-container');
         const video = document.getElementById('video');
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
+        const requestCameraBtn = document.getElementById('request-camera-btn');
 
         // Function to request camera permission
         function requestCameraPermission() {
@@ -115,18 +116,17 @@
                     video.srcObject = stream;
                     video.play();
                     setInterval(scanQRCode, 1000);
-                    // Hide the permission button after permission is granted
-                    requestPermissionButton.style.display = 'none';
+                    // Hide the request button and show the video container
+                    requestCameraBtn.style.display = 'none';
+                    videoContainer.style.display = 'block';
                 })
                 .catch(function(err) {
                     console.error('Error accessing the camera:', err);
                 });
         }
 
-        // Event listener for the permission button
-        requestPermissionButton.addEventListener('click', function() {
-            requestCameraPermission();
-        });
+        // Event listener for the request camera button
+        requestCameraBtn.addEventListener('click', requestCameraPermission);
 
             function scanQRCode() {
                 canvas.width = video.videoWidth;
