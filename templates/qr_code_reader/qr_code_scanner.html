@@ -85,7 +85,7 @@
     </style>
 </head>
 <body>
-    <button id="request-camera-btn">Request Camera Access</button>
+    
 
     <div id="scanner-container">
         <video id="video" autoplay playsinline></video>
@@ -107,38 +107,45 @@
         const video = document.getElementById('video');
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        const requestCameraBtn = document.getElementById('request-camera-btn');
 
         // Function to request camera permission
         function requestCameraPermission() {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function(stream) {
-                    video.srcObject = stream;
-                    video.play();
+            return new Promise((resolve, reject) => {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        video.srcObject = stream;
+                        video.play();
+                        resolve();
+                    })
+                    .catch(error => {
+                        console.error('Error accessing the camera:', error);
+                        reject(error);
+                    });
+            });
+        }
+
+        // Function to start scanning QR code
+        function startScanning() {
+            requestCameraPermission()
+                .then(() => {
                     setInterval(scanQRCode, 1000);
-                    // Hide the request button and show the video container
-                    requestCameraBtn.style.display = 'none';
-                    videoContainer.style.display = 'block';
                 })
-                .catch(function(err) {
-                    console.error('Error accessing the camera:', err);
+                .catch(error => {
+                    // Handle error
                 });
         }
 
-        // Event listener for the request camera button
-        requestCameraBtn.addEventListener('click', requestCameraPermission);
+        // Function to scan QR code
+        function scanQRCode() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            // Use jsQR or any other library to decode QR code
+        }
 
-            function scanQRCode() {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                const code = jsQR(imageData.data, imageData.width, imageData.height);
-                if (code) {
-                    console.log('QR code detected in scanQRCode:', code.data); // Add this line to log the QR code data
-                    openModal(code.data);
-                }
-            }
+        // Call startScanning function to begin scanning
+        startScanning();
             
 
         function openModal(data) {
