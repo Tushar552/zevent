@@ -12,7 +12,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #000000ef;
+            background-color: #000000;
         }
 
         #scanner-container {
@@ -85,10 +85,8 @@
     </style>
 </head>
 <body>
-    
-
     <div id="scanner-container">
-        <video id="video" autoplay playsinline></video>
+        <video id="video" autoplay></video>
         <div id="scanning-effect"></div>
     </div>
 
@@ -103,49 +101,31 @@
 
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.0/dist/jsQR.js"></script>
     <script>
-        const videoContainer = document.getElementById('video-container');
         const video = document.getElementById('video');
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
 
-        // Function to request camera permission
-        function requestCameraPermission() {
-            return new Promise((resolve, reject) => {
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(stream => {
-                        video.srcObject = stream;
-                        video.play();
-                        resolve();
-                    })
-                    .catch(error => {
-                        console.error('Error accessing the camera:', error);
-                        reject(error);
-                    });
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                video.srcObject = stream;
+                video.play();
+                setInterval(scanQRCode, 1000);
+            })
+            .catch(function(err) {
+                console.error('Error accessing the camera:', err);
             });
-        }
 
-        // Function to start scanning QR code
-        function startScanning() {
-            requestCameraPermission()
-                .then(() => {
-                    setInterval(scanQRCode, 1000);
-                })
-                .catch(error => {
-                    // Handle error
-                });
-        }
-
-        // Function to scan QR code
-        function scanQRCode() {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            // Use jsQR or any other library to decode QR code
-        }
-
-        // Call startScanning function to begin scanning
-        startScanning();
+            function scanQRCode() {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                if (code) {
+                    console.log('QR code detected in scanQRCode:', code.data); // Add this line to log the QR code data
+                    openModal(code.data);
+                }
+            }
             
 
         function openModal(data) {
