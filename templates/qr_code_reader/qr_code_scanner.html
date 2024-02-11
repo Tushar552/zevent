@@ -107,7 +107,11 @@
 
         async function requestCameraPermission() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment' // Use the back camera
+                    }
+                });
                 return stream;
             } catch (error) {
                 console.error('Error accessing the camera:', error);
